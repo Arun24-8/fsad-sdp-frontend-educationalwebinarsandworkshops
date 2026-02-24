@@ -3,7 +3,7 @@
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
   gap: 0;
-  background: radial-gradient(circle at 15% 10%, #7e7adf 0%, #6a5bc8 40%, #5a439f 100%);
+  background: radial-gradient(circle at 15% 10%, #2d2561 0%, #1a1445 40%, #0f0a2e 100%);
   color: #f6f5ff;
   position: relative;
   overflow: hidden;
@@ -43,24 +43,42 @@
   gap: 12px;
 }
 
+.brand-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
 .floating-icon {
-  width: 68px;
-  height: 68px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08));
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
   display: grid;
   place-items: center;
-  margin-bottom: 16px;
   position: relative;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-    0 18px 30px rgba(36, 20, 77, 0.2);
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.15),
+    0 12px 24px rgba(36, 20, 77, 0.2),
+    0 0 1px rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.brand-header:hover .floating-icon {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.12));
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2),
+    0 16px 32px rgba(36, 20, 77, 0.3),
+    0 0 1px rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
 }
 
 .floating-icon img {
-  width: 36px;
-  height: 36px;
-  filter: drop-shadow(0 6px 12px rgba(23, 16, 60, 0.35));
+  width: 32px;
+  height: 32px;
+  filter: drop-shadow(0 4px 8px rgba(23, 16, 60, 0.3));
 }
 
 .left-panel h1 {
@@ -72,17 +90,9 @@
 .brand-title {
   position: relative;
   font-weight: 700;
-  text-shadow: 0 10px 24px rgba(23, 16, 60, 0.25);
-}
-
-.brand-title::after {
-  content: "";
-  display: block;
-  width: 72px;
-  height: 3px;
-  margin-top: 12px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.2));
+  text-shadow: 0 8px 20px rgba(23, 16, 60, 0.3);
+  margin: 0;
+  line-height: 1.2;
 }
 
 .tagline {
@@ -165,7 +175,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
+
 
 .auth-card {
   width: min(470px, 100%);
@@ -177,23 +189,18 @@
   display: grid;
   gap: 16px;
   animation: rise 0.7s ease forwards;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.auth-card:hover {
+  box-shadow: 0 32px 80px rgba(40, 26, 86, 0.38);
+  transform: translateY(-4px);
 }
 
 .card-title {
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.spark {
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #9b46ff, #ff6cd9);
-  color: #fff;
-  display: grid;
-  place-items: center;
-  font-weight: 700;
 }
 
 .card-title h2 {
@@ -213,63 +220,58 @@
   color: #323a4f;
 }
 
-.portal-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.portal-option {
+.role-selector {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px;
-  border-radius: 16px;
-  border: 1px solid #e0def0;
-  background: #fff;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-  transition: transform 0.2s ease, border 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-.portal-option:hover {
-  transform: translateY(-2px);
-  border-color: #b7a9ff;
-  background: #faf9ff;
-}
-
-.portal-option.active {
-  border: 2px solid #9b46ff;
-  box-shadow: 0 12px 24px rgba(155, 70, 255, 0.18);
-}
-
-.portal-option h4 {
-  margin: 0 0 2px;
-  font-size: 0.95rem;
-}
-
-.portal-option span {
-  font-size: 0.8rem;
-  color: #7a8297;
-}
-
-.portal-badge {
-  width: 46px;
-  height: 46px;
+.role-block {
+  flex: 1;
+  padding: 14px 18px;
   border-radius: 14px;
-  display: grid;
-  place-items: center;
+  border: 2px solid #9b46ff;
+  background: linear-gradient(135deg, rgba(155, 70, 255, 0.08), rgba(255, 108, 217, 0.08));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+}
+
+.role-block:hover {
+  border-color: #b366ff;
+  background: linear-gradient(135deg, rgba(155, 70, 255, 0.12), rgba(255, 108, 217, 0.12));
+  box-shadow: 0 8px 16px rgba(155, 70, 255, 0.15);
+}
+
+.role-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #9b46ff;
+}
+
+.change-btn {
+  padding: 10px 24px;
   background: linear-gradient(135deg, #9b46ff, #ff6cd9);
   color: #fff;
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 1px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(155, 70, 255, 0.25);
 }
 
-.portal-badge.blue {
-  background: linear-gradient(135deg, #2b8bff, #18c5ff);
+.change-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(155, 70, 255, 0.35);
+}
+
+.change-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(155, 70, 255, 0.25);
 }
 
 .auth-form {
@@ -287,11 +289,17 @@
 .field input {
   height: 44px;
   border-radius: 12px;
-  border: 1px solid #e0def0;
+  border: 1.5px solid #e0def0;
   padding: 0 14px;
   font-size: 0.95rem;
   background: #fff;
-  transition: border 0.2s ease, box-shadow 0.2s ease;
+  transition: border 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.field input:hover {
+  border-color: #d0c7e8;
+  background: #faf9ff;
+  box-shadow: 0 4px 12px rgba(155, 70, 255, 0.08);
 }
 
 .field input:focus {

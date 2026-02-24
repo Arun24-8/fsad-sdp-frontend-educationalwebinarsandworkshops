@@ -3,18 +3,26 @@ import './Dashboard.css'
 
 function Dashboard() {
   const [portal, setPortal] = useState('student')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    console.log('Form submitted:', { email, password, portal })
+  }
 
   return (
     <div className="dashboard">
       <section className="left-panel">
-        <div className="floating-icon">
-          <img
-            src="https://unpkg.com/heroicons@2.1.1/24/solid/academic-cap.svg"
-            alt="WorkshopHub icon"
-          />
+        <div className="brand-header">
+          <div className="floating-icon">
+            <img
+              src="https://unpkg.com/heroicons@2.1.1/24/solid/academic-cap.svg"
+              alt="WorkshopHub icon"
+            />
+          </div>
+          <h1 className="brand-title">WorkshopHub</h1>
         </div>
-
-        <h1 className="brand-title">WorkshopHub</h1>
         <p className="tagline">Learn from experts worldwide</p>
         <p className="subcopy">
           Join thousands of learners advancing their skills with structured,
@@ -49,7 +57,6 @@ function Dashboard() {
       <section className="right-panel">
         <div className="auth-card" id="dashboard">
           <div className="card-title">
-            <span className="spark">*</span>
             <h2>Welcome Back</h2>
           </div>
           <p className="card-subtitle">
@@ -57,52 +64,49 @@ function Dashboard() {
           </p>
 
           <div className="portal-section">
-            <p className="section-label">Choose Your Portal</p>
-            <div className="portal-grid">
+            <p className="section-label">Select your role</p>
+            <div className="role-selector">
+              <div className="role-block">
+                <span className="role-text">{portal === 'student' ? 'Student' : 'Instructor'}</span>
+              </div>
               <button
-                className={`portal-option ${portal === 'student' ? 'active' : ''}`}
+                className="change-btn"
                 type="button"
-                onClick={() => setPortal('student')}
+                onClick={() => setPortal(portal === 'student' ? 'instructor' : 'student')}
               >
-                <div className="portal-badge">STU</div>
-                <div>
-                  <h4>Student Portal</h4>
-                  <span>Browse and attend</span>
-                </div>
-              </button>
-              <button
-                className={`portal-option ${portal === 'instructor' ? 'active' : ''}`}
-                type="button"
-                onClick={() => setPortal('instructor')}
-              >
-                <div className="portal-badge blue">INS</div>
-                <div>
-                  <h4>Instructor Portal</h4>
-                  <span>Create and manage</span>
-                </div>
+                Change
               </button>
             </div>
           </div>
 
-          <form className="auth-form">
+          <form className="auth-form" onSubmit={handleSubmit}>
             <label className="field">
               <span>Email Address</span>
-              <input type="email" placeholder="your.email@example.com" />
+              <input 
+                type="email" 
+                placeholder="your.email@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </label>
             <label className="field">
               <span>Password</span>
-              <input type="password" placeholder="Enter your password" />
+              <input 
+                type="password" 
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
             </label>
             <button className="primary" type="submit">
-              Sign In to Student Portal
+              Sign In to {portal === 'student' ? 'Student' : 'Instructor'} Portal
               <span className="arrow">-&gt;</span>
             </button>
           </form>
 
           <div className="card-footer">
-            <button className="ghost-link" type="button">
-              Demo Mode
-            </button>
             <a className="help" href="mailto:support@eduwebinar.com">
               Need help? Contact support
             </a>
