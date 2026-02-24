@@ -1,14 +1,37 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './Dashboard.css'
 
+const LOGGED_IN_USER_KEY = 'eduwebinarLoggedInUser'
+
 function Dashboard() {
+  const navigate = useNavigate()
   const [portal, setPortal] = useState('student')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    console.log('Form submitted:', { email, password, portal })
+
+    const trimmedEmail = email.trim()
+    const usernameFromEmail = trimmedEmail.toLowerCase().endsWith('@gmail.com')
+      ? trimmedEmail.slice(0, -'@gmail.com'.length)
+      : trimmedEmail.split('@')[0]
+
+    localStorage.setItem(
+      LOGGED_IN_USER_KEY,
+      JSON.stringify({
+        username: usernameFromEmail || 'User',
+        email: trimmedEmail,
+      }),
+    )
+
+    if (portal === 'instructor') {
+      navigate('/instructor')
+      return
+    }
+
+    navigate('/dashboard')
   }
 
   return (
