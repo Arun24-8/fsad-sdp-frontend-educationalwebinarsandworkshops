@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import './Dashboard.css'
+import '../styles/Dashboard.css'
 
 const LOGGED_IN_USER_KEY = 'eduwebinarLoggedInUser'
 

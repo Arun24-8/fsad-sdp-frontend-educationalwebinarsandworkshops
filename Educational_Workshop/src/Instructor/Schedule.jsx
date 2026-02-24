@@ -1,6 +1,7 @@
 import '../styles/Instructor.css'
-import { useLocation, useNavigate } from 'react-router-dom'
+import '../styles/Schedule.css'
 import { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const LOGGED_IN_USER_KEY = 'eduwebinarLoggedInUser'
 const SCHEDULED_EVENTS_KEY = 'scheduledEvents'
@@ -14,11 +15,24 @@ const sidebarItems = [
   { label: 'Analytics', icon: ChartIcon },
 ]
 
-function Instructor() {
+function Schedule() {
   const navigate = useNavigate()
   const location = useLocation()
   const [loggedInUsername, setLoggedInUsername] = useState('User')
-  const [totalEvents, setTotalEvents] = useState(0)
+  
+  // Form state
+  const [formData, setFormData] = useState({
+    eventType: '',
+    category: '',
+    title: '',
+    description: '',
+    instructorName: '',
+    date: '',
+    time: '',
+    duration: '',
+    capacity: '',
+    streamUrl: '',
+  })
 
   useEffect(() => {
     const savedUser = localStorage.getItem(LOGGED_IN_USER_KEY)
@@ -32,61 +46,53 @@ function Instructor() {
       const parsedUser = JSON.parse(savedUser)
       const username = parsedUser?.username || 'User'
       setLoggedInUsername(username)
+      setFormData(prev => ({ ...prev, instructorName: username }))
     } catch {
       setLoggedInUsername('User')
     }
   }, [])
-
-  useEffect(() => {
-    // Load events count from localStorage
-    try {
-      const events = JSON.parse(localStorage.getItem(SCHEDULED_EVENTS_KEY) || '[]')
-      setTotalEvents(events.length)
-    } catch {
-      setTotalEvents(0)
-    }
-  }, [])
-
-  const statCards = [
-    {
-      key: 'total',
-      value: totalEvents.toString(),
-      title: 'Total Webinars',
-      badge: 'Total',
-      tone: 'total',
-      icon: BarsIcon,
-    },
-    {
-      key: 'registrations',
-      value: '0',
-      title: 'Total Registrations',
-      badge: 'Active',
-      tone: 'active',
-      icon: PeopleCardIcon,
-    },
-    {
-      key: 'attended',
-      value: '0',
-      title: 'Attended',
-      badge: 'Completed',
-      tone: 'completed',
-      icon: CheckCircleIcon,
-    },
-    {
-      key: 'live',
-      value: '0',
-      title: 'Live Sessions',
-      badge: '',
-      tone: 'live',
-      icon: CameraIcon,
-    },
-  ]
 
   const avatarLetter = loggedInUsername.charAt(0).toUpperCase() || 'U'
 
   const handleLogout = () => {
     localStorage.removeItem(LOGGED_IN_USER_KEY)
     navigate('/dashboard')
+  }
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    
+    // Validate required fields
+    if (!formData.eventType || !formData.category || !formData.title || !formData.date || !formData.time) {
+      alert('Please fill in all required fields: Event Type, Category, Title, Date, and Time')
+      return
+    }
+
+    // Create event object
+    const newEvent = {
+      id: Date.now().toString(),
+      ...formData,
+      createdAt: new Date().toISOString(),
+      status: 'scheduled',
+    }
+
+    // Save to localStorage
+    try {
+      const existingEvents = JSON.parse(localStorage.getItem(SCHEDULED_EVENTS_KEY) || '[]')
+      const updatedEvents = [...existingEvents, newEvent]
+      localStorage.setItem(SCHEDULED_EVENTS_KEY, JSON.stringify(updatedEvents))
+      
+      alert('Event scheduled successfully!')
+      navigate('/instructor')
+    } catch (error) {
+      alert('Failed to schedule event. Please try again.')
+      console.error('Error saving event:', error)
+    }
   }
 
   return (
@@ -145,36 +151,142 @@ function Instructor() {
         </section>
       </aside>
 
-      <main className="instructor-main">
-        <header className="instructor-header">
+      <main className="instructor-main schedule-main">
+        <header className="schedule-header">
           <h2>
-            Instructor Dashboard <span className="header-cap">🎓</span>
+            Schedule New Event <span className="header-cap">🗓️</span>
           </h2>
-          <p>Manage your webinars, track registrations, and upload resources</p>
+          <p>Create a new webinar or workshop for your students</p>
         </header>
 
-        <section className="stats-grid" aria-label="Webinar metrics">
-          {statCards.map((card) => {
-            const Icon = card.icon
-            return (
-              <article
-                key={card.key}
-                className={`metric-card metric-${card.tone}`}
-                aria-label={card.title}
+        <section className="schedule-form-shell" aria-label="Schedule Event Form">
+          <form className="schedule-form" onSubmit={handleSubmit}>
+            <label>
+              <span>Event Type *</span>
+              <select 
+                name="eventType"
+                value={formData.eventType} 
+                onChange={handleInputChange}
+                required
               >
-                <div className="metric-top-row">
-                  <div className="metric-icon-wrap">
-                    <Icon />
-                  </div>
-                  {card.badge ? <span className="metric-badge">{card.badge}</span> : null}
-                </div>
-                <p className="metric-value">{card.value}</p>
-                <p className="metric-label">{card.title}</p>
-              </article>
-            )
-          })}
-        </section>
+                <option value="" disabled>Select event type</option>
+                <option value="webinar">Webinar</option>
+                <option value="workshop">Workshop</option>
+              </select>
+            </label>
 
+            <label>
+              <span>Category *</span>
+              <select 
+                name="category"
+                value={formData.category} 
+                onChange={handleInputChange}
+                required
+              >
+                <option value="" disabled>Select category</option>
+                <option value="technology">Technology</option>
+                <option value="business">Business</option>
+                <option value="design">Design</option>
+                <option value="marketing">Marketing</option>
+                <option value="education">Education</option>
+              </select>
+            </label>
+
+            <label className="full-width">
+              <span>Event Title *</span>
+              <input 
+                type="text" 
+                name="title"
+                value={formData.title}
+                onChange={handleInputChange}
+                placeholder="Enter event title" 
+                required
+              />
+            </label>
+
+            <label className="full-width">
+              <span>Description</span>
+              <textarea 
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                placeholder="Enter event description" 
+                rows={5} 
+              />
+            </label>
+
+            <label className="full-width">
+              <span>Instructor Name</span>
+              <input 
+                type="text" 
+                name="instructorName"
+                value={formData.instructorName}
+                onChange={handleInputChange}
+                placeholder="Enter instructor name"
+              />
+            </label>
+
+            <label>
+              <span>Date *</span>
+              <input 
+                type="date" 
+                name="date"
+                value={formData.date}
+                onChange={handleInputChange}
+                required
+              />
+            </label>
+
+            <label>
+              <span>Time *</span>
+              <input 
+                type="time" 
+                name="time"
+                value={formData.time}
+                onChange={handleInputChange}
+                required
+              />
+            </label>
+
+            <label>
+              <span>Duration</span>
+              <input 
+                type="text" 
+                name="duration"
+                value={formData.duration}
+                onChange={handleInputChange}
+                placeholder="e.g. 60 mins" 
+              />
+            </label>
+
+            <label>
+              <span>Capacity</span>
+              <input 
+                type="number" 
+                name="capacity"
+                value={formData.capacity}
+                onChange={handleInputChange}
+                min="1" 
+                placeholder="e.g. 100" 
+              />
+            </label>
+
+            <label>
+              <span>Stream URL (Optional)</span>
+              <input 
+                type="url" 
+                name="streamUrl"
+                value={formData.streamUrl}
+                onChange={handleInputChange}
+                placeholder="https://" 
+              />
+            </label>
+
+            <button type="submit" className="schedule-submit">
+              +&nbsp; Schedule Event
+            </button>
+          </form>
+        </section>
       </main>
     </div>
   )
@@ -247,43 +359,6 @@ function ChartIcon() {
   )
 }
 
-function BarsIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M6 18.5V8M12 18.5V4.7M18 18.5V11.3" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
-      <path d="M4 18.5H20" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function PeopleCardIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="9" cy="9" r="2.8" fill="none" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M4.4 17.6C5 15.5 6.6 14.4 9 14.4C11.4 14.4 13 15.5 13.6 17.6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <circle cx="16.7" cy="9.4" r="2.2" fill="none" stroke="currentColor" strokeWidth="1.6" />
-    </svg>
-  )
-}
-
-function CheckCircleIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M8.5 12.1L10.9 14.5L15.7 9.7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-function CameraIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <rect x="3" y="7" width="13" height="10" rx="2.5" fill="none" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M16 10L21 7.8V16.2L16 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
 function LogoutIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -294,4 +369,4 @@ function LogoutIcon() {
   )
 }
 
-export default Instructor
+export default Schedule
