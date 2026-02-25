@@ -31,7 +31,7 @@ function Dashboard() {
       return
     }
 
-    navigate('/dashboard')
+    navigate('/user-dashboard')
   }
 
   return (
