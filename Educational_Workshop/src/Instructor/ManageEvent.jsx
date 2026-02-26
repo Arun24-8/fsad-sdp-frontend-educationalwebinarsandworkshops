@@ -10,7 +10,7 @@ const sidebarItems = [
   { label: 'Schedule Event', path: '/instructor/schedule', icon: ScheduleIcon },
   { label: 'Manage Events', path: '/instructor/manage-events', icon: CalendarIcon },
   { label: 'Registrations', path: '/instructor/registrations', icon: UsersIcon },
-  { label: 'Resources', icon: UploadIcon },
+  { label: 'Resources', path: '/instructor/resources', icon: UploadIcon },
   { label: 'Analytics', icon: ChartIcon },
 ]
 
@@ -20,6 +20,8 @@ function ManageEvent() {
   const [events, setEvents] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState('all') // 'all', 'webinar', 'workshop'
+  const [liveEvent, setLiveEvent] = useState(null)
+  const [callSeconds, setCallSeconds] = useState(0)
 
   useEffect(() => {
     const savedUser = localStorage.getItem(LOGGED_IN_USER_KEY)
@@ -48,6 +50,33 @@ function ManageEvent() {
     }
   }, [])
 
+  useEffect(() => {
+    if (!liveEvent) {
+      setCallSeconds(0)
+      return
+    }
+
+    const startedAt = Date.now()
+    const timer = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startedAt) / 1000)
+      setCallSeconds(elapsed)
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [liveEvent])
+
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow
+
+    if (liveEvent) {
+      document.body.style.overflow = 'hidden'
+    }
+
+    return () => {
+      document.body.style.overflow = originalOverflow
+    }
+  }, [liveEvent])
+
   const avatarLetter = loggedInUsername.charAt(0).toUpperCase() || 'U'
 
   const handleLogout = () => {
@@ -55,8 +84,12 @@ function ManageEvent() {
     navigate('/dashboard')
   }
 
-  const handleGoLive = () => {
-    alert('Meeting page is not available.')
+  const handleGoLive = (event) => {
+    setLiveEvent(event)
+  }
+
+  const handleEndCall = () => {
+    setLiveEvent(null)
   }
 
   const handleDelete = (eventId) => {
@@ -82,6 +115,8 @@ function ManageEvent() {
     
     return matchesSearch && matchesType
   })
+
+  const formattedCallTime = new Date(callSeconds * 1000).toISOString().slice(14, 19)
 
   return (
     <div className="manage-event-container">
@@ -262,7 +297,7 @@ function ManageEvent() {
                   <div className="event-card-actions">
                     <button
                       className="btn-go-live"
-                      onClick={() => handleGoLive(event.id)}
+                      onClick={() => handleGoLive(event)}
                     >
                       <PlayIcon />
                       Go Live
@@ -281,6 +316,34 @@ function ManageEvent() {
           )}
         </section>
       </main>
+
+      {liveEvent ? (
+        <section className="live-call-overlay" aria-label="Live call">
+          <div className="live-call-card" role="dialog" aria-modal="true">
+            <p className="live-call-label">Live now</p>
+            <h3 className="live-call-title">{liveEvent.title || 'Event Call'}</h3>
+            <p className="live-call-subtitle">{loggedInUsername} is presenting</p>
+
+            <div className="live-call-avatar" aria-hidden="true">
+              {loggedInUsername.charAt(0).toUpperCase()}
+            </div>
+
+            <p className="live-call-timer">{formattedCallTime}</p>
+
+            <div className="live-call-controls">
+              <button type="button" className="call-control-btn" aria-label="Toggle microphone">
+                <MicIcon />
+              </button>
+              <button type="button" className="call-control-btn" aria-label="Toggle camera">
+                <VideoIcon />
+              </button>
+              <button type="button" className="call-control-btn end-call" onClick={handleEndCall} aria-label="End call">
+                <CallEndIcon />
+              </button>
+            </div>
+          </div>
+        </section>
+      ) : null}
     </div>
   )
 }
@@ -457,6 +520,34 @@ function ClearIcon() {
   return (
     <svg viewBox="0 0 24 24" width="18" height="18">
       <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function MicIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="20" height="20">
+      <rect x="9" y="4" width="6" height="10" rx="3" fill="none" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M6 11.5C6 15 8.7 17.5 12 17.5C15.3 17.5 18 15 18 11.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M12 17.5V21" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function VideoIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="20" height="20">
+      <rect x="3" y="7" width="12" height="10" rx="2" fill="none" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M15 10L21 7.5V16.5L15 14V10Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function CallEndIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="20" height="20">
+      <path d="M4 14C6 11.5 8.8 10.2 12 10.2C15.2 10.2 18 11.5 20 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M7.5 14V17.5M16.5 14V17.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   )
 }

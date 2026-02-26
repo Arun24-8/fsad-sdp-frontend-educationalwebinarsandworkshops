@@ -509,6 +509,99 @@
   box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
 }
 
+/* Live Call Overlay */
+.live-call-overlay {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, #1f2937 0%, #0f172a 65%, #020617 100%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.live-call-card {
+  width: min(440px, 100%);
+  text-align: center;
+  color: #f8fafc;
+}
+
+.live-call-label {
+  margin: 0;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #cbd5e1;
+}
+
+.live-call-title {
+  margin: 0.65rem 0 0.35rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.live-call-subtitle {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.98rem;
+}
+
+.live-call-avatar {
+  margin: 2.2rem auto 1rem;
+  width: 112px;
+  height: 112px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  box-shadow: 0 20px 40px rgba(99, 102, 241, 0.35);
+}
+
+.live-call-timer {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.live-call-controls {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.call-control-btn {
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  background: rgba(148, 163, 184, 0.22);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.call-control-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(148, 163, 184, 0.35);
+}
+
+.call-control-btn.end-call {
+  background: #dc2626;
+}
+
+.call-control-btn.end-call:hover {
+  background: #b91c1c;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .manage-event-main {
@@ -573,5 +666,15 @@
   .btn-delete {
     width: 100%;
     justify-content: center;
+  }
+
+  .live-call-title {
+    font-size: 1.5rem;
+  }
+
+  .live-call-avatar {
+    width: 94px;
+    height: 94px;
+    font-size: 2rem;
   }
 }

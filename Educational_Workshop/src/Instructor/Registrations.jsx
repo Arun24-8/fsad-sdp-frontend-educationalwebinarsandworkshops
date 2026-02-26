@@ -10,7 +10,7 @@ const sidebarItems = [
   { label: 'Schedule Event', path: '/instructor/schedule', icon: ScheduleIcon },
   { label: 'Manage Events', path: '/instructor/manage-events', icon: CalendarIcon },
   { label: 'Registrations', path: '/instructor/registrations', icon: UsersIcon },
-  { label: 'Resources', icon: UploadIcon },
+  { label: 'Resources', path: '/instructor/resources', icon: UploadIcon },
   { label: 'Analytics', icon: ChartIcon },
 ]
 
