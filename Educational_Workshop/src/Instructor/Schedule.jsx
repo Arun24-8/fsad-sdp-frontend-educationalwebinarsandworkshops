@@ -9,8 +9,8 @@ const SCHEDULED_EVENTS_KEY = 'scheduledEvents'
 const sidebarItems = [
   { label: 'Dashboard', path: '/instructor', icon: DashboardIcon },
   { label: 'Schedule Event', path: '/instructor/schedule', icon: ScheduleIcon },
-  { label: 'Manage Events', icon: CalendarIcon },
-  { label: 'Registrations', icon: UsersIcon },
+  { label: 'Manage Events', path: '/instructor/manage-events', icon: CalendarIcon },
+  { label: 'Registrations', path: '/instructor/registrations', icon: UsersIcon },
   { label: 'Resources', icon: UploadIcon },
   { label: 'Analytics', icon: ChartIcon },
 ]
