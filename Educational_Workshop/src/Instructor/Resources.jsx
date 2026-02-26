@@ -1,5 +1,5 @@
 import '../styles/Resources.css'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const LOGGED_IN_USER_KEY = 'eduwebinarLoggedInUser'
@@ -40,6 +40,8 @@ function Resources() {
   const [loggedInUsername, setLoggedInUsername] = useState('User')
   const [events, setEvents] = useState([])
   const [resources, setResources] = useState([])
+  const [showSuccessToast, setShowSuccessToast] = useState(false)
+  const toastTimerRef = useRef(null)
   const [formData, setFormData] = useState({
     eventId: '',
     resourceName: '',
@@ -86,6 +88,12 @@ function Resources() {
     }
   }, [])
 
+  useEffect(() => () => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current)
+    }
+  }, [])
+
   const avatarLetter = loggedInUsername.charAt(0).toUpperCase() || 'U'
 
   const handleLogout = () => {
@@ -120,6 +128,14 @@ function Resources() {
     const updatedResources = [newResource, ...resources]
     setResources(updatedResources)
     localStorage.setItem(INSTRUCTOR_RESOURCES_KEY, JSON.stringify(updatedResources))
+
+    setShowSuccessToast(true)
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current)
+    }
+    toastTimerRef.current = setTimeout(() => {
+      setShowSuccessToast(false)
+    }, 2500)
 
     setFormData({
       eventId: '',
@@ -202,6 +218,12 @@ function Resources() {
           </h2>
           <p>Upload and manage post-event resources for your students</p>
         </header>
+
+        {showSuccessToast ? (
+          <div className="resource-toast" role="status">
+            Resource uploaded successfully.
+          </div>
+        ) : null}
 
         <section className="upload-card" aria-label="Upload resource">
           <h3>

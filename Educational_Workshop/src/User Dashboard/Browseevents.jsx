@@ -1,37 +1,6 @@
 import { useMemo, useState } from "react";
 
-const events = [
-  {
-    title: "AI Product Management Essentials",
-    category: "Technology",
-    format: "Webinar",
-    date: "Apr 2, 2026 at 17:00",
-    speaker: "Dr. Neha Kapoor",
-  },
-  {
-    title: "Growth Marketing Bootcamp",
-    category: "Marketing",
-    format: "Workshop",
-    date: "Apr 6, 2026 at 15:00",
-    speaker: "Aarav Patel",
-  },
-  {
-    title: "Design Systems at Scale",
-    category: "Design",
-    format: "Webinar",
-    date: "Apr 10, 2026 at 12:30",
-    speaker: "Sofia Kim",
-  },
-  {
-    title: "Data Storytelling with Tableau",
-    category: "Analytics",
-    format: "Workshop",
-    date: "Apr 14, 2026 at 10:00",
-    speaker: "James Carter",
-  },
-];
-
-export default function Browseevents({ registrations, onRegister }) {
+export default function Browseevents({ registrations, onRegister, events = [] }) {
   const [query, setQuery] = useState("");
 
   const filteredEvents = useMemo(() => {
@@ -73,7 +42,8 @@ export default function Browseevents({ registrations, onRegister }) {
       <div className="registered-grid">
         {filteredEvents.map((item) => {
           const isRegistered = registrations.some(
-            (registered) => registered.title === item.title
+            (registered) =>
+              registered.eventId === item.id || registered.title === item.title
           );
           return (
             <article key={item.title} className="registered-card">

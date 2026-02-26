@@ -9,9 +9,17 @@ function Dashboard() {
   const [portal, setPortal] = useState('student')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    setError('')
+
+    // Validate password length
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long')
+      return
+    }
 
     const trimmedEmail = email.trim()
     const usernameFromEmail = trimmedEmail.toLowerCase().endsWith('@gmail.com')
@@ -86,6 +94,8 @@ function Dashboard() {
             Sign in to access your learning portal
           </p>
 
+          {error && <div className="error-message">{error}</div>}
+
           <div className="portal-section">
             <p className="section-label">Select your role</p>
             <div className="role-selector">
@@ -130,7 +140,12 @@ function Dashboard() {
           </form>
 
           <div className="card-footer">
-            <a className="help" href="mailto:support@eduwebinar.com">
+            <a
+              className="help"
+              href="https://t.me/SAIANILKUMAR01"
+              target="_blank"
+              rel="noreferrer"
+            >
               Need help? Contact support
             </a>
           </div>

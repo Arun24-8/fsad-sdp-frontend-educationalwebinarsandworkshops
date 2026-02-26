@@ -181,6 +181,17 @@
   font-size: 1rem;
 }
 
+.resource-toast {
+  margin: 0 0 1.25rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: 12px;
+  background: #ecfdf3;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+  font-weight: 600;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+}
+
 .upload-card {
   background: white;
   border-radius: 18px;

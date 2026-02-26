@@ -7,6 +7,7 @@ import Schedule from './Instructor/Schedule'
 import ManageEvent from './Instructor/ManageEvent'
 import Registrations from './Instructor/Registrations'
 import Resources from './Instructor/Resources'
+import Analytics from './Instructor/Analytics'
 import UserDashboard from './User Dashboard/UserDashboard'
 
 const LOGGED_IN_USER_KEY = 'eduwebinarLoggedInUser'
@@ -72,6 +73,7 @@ function App() {
         <Route path="/instructor/manage-events" element={<ManageEvent />} />
         <Route path="/instructor/registrations" element={<Registrations />} />
         <Route path="/instructor/resources" element={<Resources />} />
+        <Route path="/instructor/analytics" element={<Analytics />} />
         <Route path="/user-dashboard" element={<UserDashboardPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="*" element={<Navigate to="/" replace />} />

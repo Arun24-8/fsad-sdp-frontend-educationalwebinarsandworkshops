@@ -3,6 +3,10 @@ import Browseevents from "./Browseevents";
 import Mywebinar from "./Mywebinar";
 import "./UserDashboard.css";
 
+const SCHEDULED_EVENTS_KEY = "scheduledEvents";
+const INSTRUCTOR_RESOURCES_KEY = "instructorResources";
+const REGISTRATIONS_KEY = "eventRegistrations";
+
 const statIcons = {
   registrations: (
     <svg viewBox="0 0 24 24" fill="none">
@@ -53,8 +57,9 @@ const statIcons = {
   ),
 };
 
-const webinars = [
+const DEFAULT_WEBINARS = [
   {
+    id: "default-ml",
     tag: "Webinar",
     category: "Technology",
     title: "Introduction to Machine Learning",
@@ -65,6 +70,7 @@ const webinars = [
     buttonClass: "button button-outline",
   },
   {
+    id: "default-marketing",
     tag: "Workshop",
     category: "Marketing",
     title: "Digital Marketing Strategies 2026",
@@ -75,6 +81,7 @@ const webinars = [
     buttonClass: "button button-outline",
   },
   {
+    id: "default-python",
     tag: "Workshop",
     category: "Technology",
     title: "Python for Data Science",
@@ -86,19 +93,152 @@ const webinars = [
   },
 ];
 
-const resources = [
+const DEFAULT_RESOURCES = [
   {
+    id: "default-resource-1",
     title: "Design Principles Guide",
     from: "UI/UX Design Principles",
+    url: "#",
   },
   {
+    id: "default-resource-2",
     title: "Figma Template Files",
     from: "UI/UX Design Principles",
+    url: "#",
   },
 ];
 
 const navItems = ["Dashboard", "My Webinars", "Browse Events"];
 const filters = ["All", "Webinars", "Workshops"];
+
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+function safeParseJson(value, fallback) {
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function toSafeId(value) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+function formatCategory(value) {
+  if (!value) {
+    return "General";
+  }
+
+  const text = value.toString();
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+function formatDateTime(dateValue, timeValue) {
+  if (!dateValue) {
+    return "Date TBD";
+  }
+
+  if (!timeValue && typeof dateValue === "string" && dateValue.includes(" at ")) {
+    return dateValue;
+  }
+
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) {
+    return dateValue;
+  }
+
+  const month = MONTHS[date.getMonth()];
+  const day = date.getDate();
+  const year = date.getFullYear();
+  const timeText = timeValue || "00:00";
+  return `${month} ${day}, ${year} at ${timeText}`;
+}
+
+function normalizeResources(items) {
+  return items.map((item) => ({
+    id: item.id || toSafeId(item.resourceName || item.title || "resource"),
+    title: item.resourceName || item.title || "Resource",
+    from: item.eventTitle || item.from || "Event",
+    url: item.resourceUrl || item.url || "#",
+  }));
+}
+
+function normalizeEvents(items, registrations) {
+  const counts = registrations.reduce((acc, item) => {
+    const eventKey = item.eventId || item.eventTitle || "";
+    if (!eventKey) {
+      return acc;
+    }
+
+    acc[eventKey] = (acc[eventKey] || 0) + 1;
+    return acc;
+  }, {});
+
+  return items.map((event) => {
+    const eventId =
+      event.id ||
+      event.eventId ||
+      toSafeId(`${event.title || "event"}-${event.date || ""}-${event.time || ""}`);
+    const typeValue = (event.eventType || event.type || "webinar").toLowerCase();
+    const tag = typeValue === "workshop" ? "Workshop" : "Webinar";
+    const dateText = formatDateTime(event.date, event.time);
+
+    const baseRegistrations = Number(event.registrations) || 0;
+    const registrationCount = counts[eventId] || counts[event.title] || baseRegistrations;
+
+    return {
+      id: eventId,
+      tag,
+      category: formatCategory(event.category || "General"),
+      title: event.title || "Untitled Event",
+      speaker: event.instructorName || event.speaker || "Instructor",
+      date: dateText,
+      registrations: registrationCount,
+      capacity: Number(event.capacity) || 100,
+      buttonClass: "button button-outline",
+    };
+  });
+}
+
+function getStudentRegistrations(items, profileName, profileEmail) {
+  const email = (profileEmail || "").toLowerCase();
+  const name = (profileName || "").toLowerCase();
+
+  return items
+    .filter((item) => {
+      const itemEmail = (item.email || "").toLowerCase();
+      const itemName = (item.studentName || item.name || "").toLowerCase();
+      if (email) {
+        return itemEmail === email;
+      }
+      return itemName === name;
+    })
+    .map((item) => ({
+      eventId: item.eventId,
+      title: item.eventTitle || item.title || "Event",
+      speaker: item.speaker || "Instructor",
+      date: item.date || "Date TBD",
+      format: item.eventType || item.type || "Webinar",
+    }));
+}
 
 export default function UserDashboard({
   profileName,
@@ -109,6 +249,9 @@ export default function UserDashboard({
   const [activeNav, setActiveNav] = useState("Dashboard");
   const [activeFilter, setActiveFilter] = useState("All");
   const [registrations, setRegistrations] = useState([]);
+  const [allRegistrations, setAllRegistrations] = useState([]);
+  const [events, setEvents] = useState(DEFAULT_WEBINARS);
+  const [resources, setResources] = useState(DEFAULT_RESOURCES);
   const [showSettings, setShowSettings] = useState(false);
   const [editEmail, setEditEmail] = useState(profileEmail || "");
 
@@ -116,11 +259,82 @@ export default function UserDashboard({
     setEditEmail(profileEmail || "");
   }, [profileEmail]);
 
-  const handleToggleRegister = (event) => {
-    setRegistrations((prev) =>
-      prev.some((item) => item.title === event.title)
-        ? prev.filter((item) => item.title !== event.title)
-        : [...prev, event]
+  useEffect(() => {
+    const savedRegistrations = safeParseJson(
+      localStorage.getItem(REGISTRATIONS_KEY) || "[]",
+      []
+    );
+    setAllRegistrations(savedRegistrations);
+    setRegistrations(
+      getStudentRegistrations(savedRegistrations, profileName, profileEmail)
+    );
+
+    const savedEvents = safeParseJson(
+      localStorage.getItem(SCHEDULED_EVENTS_KEY) || "[]",
+      []
+    );
+    if (savedEvents.length > 0) {
+      setEvents(normalizeEvents(savedEvents, savedRegistrations));
+    } else {
+      setEvents(normalizeEvents(DEFAULT_WEBINARS, savedRegistrations));
+    }
+
+    const savedResources = safeParseJson(
+      localStorage.getItem(INSTRUCTOR_RESOURCES_KEY) || "[]",
+      []
+    );
+    if (savedResources.length > 0) {
+      setResources(normalizeResources(savedResources));
+    } else {
+      setResources(DEFAULT_RESOURCES);
+    }
+  }, [profileEmail, profileName]);
+
+  const handleRegister = (event) => {
+    const studentName = profileName || "Student";
+    const studentEmail = profileEmail || "";
+    const eventId = event.id || event.eventId || toSafeId(event.title || "event");
+    const eventType = event.tag || event.format || event.eventType || event.type || "Webinar";
+
+    const alreadyRegistered = allRegistrations.some((item) => {
+      const matchesEvent =
+        (item.eventId && item.eventId === eventId) ||
+        item.eventTitle === event.title;
+      const matchesEmail = studentEmail && item.email === studentEmail;
+      const matchesName = !studentEmail && (item.studentName || "") === studentName;
+      return matchesEvent && (matchesEmail || matchesName);
+    });
+
+    if (alreadyRegistered) {
+      return;
+    }
+
+    const newRegistration = {
+      id: `${eventId}-${studentEmail || studentName}`,
+      eventId,
+      eventTitle: event.title || "Event",
+      eventType,
+      date: event.date || "Date TBD",
+      speaker: event.speaker || event.instructorName || "Instructor",
+      studentName,
+      email: studentEmail,
+      status: "registered",
+      createdAt: new Date().toISOString(),
+    };
+
+    const updatedRegistrations = [newRegistration, ...allRegistrations];
+    setAllRegistrations(updatedRegistrations);
+    localStorage.setItem(REGISTRATIONS_KEY, JSON.stringify(updatedRegistrations));
+    setRegistrations(
+      getStudentRegistrations(updatedRegistrations, profileName, profileEmail)
+    );
+
+    setEvents((prev) =>
+      prev.map((item) =>
+        item.id === eventId
+          ? { ...item, registrations: (item.registrations || 0) + 1 }
+          : item
+      )
     );
   };
 
@@ -134,7 +348,7 @@ export default function UserDashboard({
     },
     {
       title: "Upcoming Events",
-      value: webinars.length,
+      value: events.length,
       badge: "Available",
       tone: "blue",
       icon: statIcons.upcoming,
@@ -157,8 +371,8 @@ export default function UserDashboard({
 
   const filteredWebinars =
     activeFilter === "All"
-      ? webinars
-      : webinars.filter((item) => item.tag === activeFilter.slice(0, -1));
+      ? events
+      : events.filter((item) => item.tag === activeFilter.slice(0, -1));
 
   return (
     <div className="user-dashboard">
@@ -291,7 +505,8 @@ export default function UserDashboard({
           ) : activeNav === "Browse Events" ? (
             <Browseevents
               registrations={registrations}
-              onRegister={handleToggleRegister}
+              onRegister={handleRegister}
+              events={events}
             />
           ) : (
             <>
@@ -342,7 +557,9 @@ export default function UserDashboard({
                   (item.registrations / item.capacity) * 100
                 );
                 const isRegistered = registrations.some(
-                  (registered) => registered.title === item.title
+                  (registered) =>
+                    registered.eventId === item.id ||
+                    registered.title === item.title
                 );
                 return (
                   <article key={item.title} className="webinar-card">
@@ -379,12 +596,7 @@ export default function UserDashboard({
                         disabled={isRegistered}
                         onClick={() => {
                           if (!isRegistered) {
-                            handleToggleRegister({
-                              title: item.title,
-                              speaker: item.speaker,
-                              date: item.date,
-                              format: item.tag,
-                            });
+                            handleRegister(item);
                           }
                         }}
                       >
@@ -432,10 +644,15 @@ export default function UserDashboard({
             <h3>Post-Event Resources</h3>
             <div className="resource-grid">
               {resources.map((item) => (
-                <div key={item.title} className="resource-card">
+                <div key={item.id || item.title} className="resource-card">
                   <p className="muted">From: {item.from}</p>
                   <h4>{item.title}</h4>
-                  <a className="resource-link" href="#">
+                  <a
+                    className="resource-link"
+                    href={item.url || "#"}
+                    target={item.url && item.url !== "#" ? "_blank" : undefined}
+                    rel={item.url && item.url !== "#" ? "noreferrer" : undefined}
+                  >
                     Access Resource
                     <span>↗</span>
                   </a>
