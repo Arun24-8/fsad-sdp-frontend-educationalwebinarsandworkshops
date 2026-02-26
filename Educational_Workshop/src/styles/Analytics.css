@@ -1,0 +1,356 @@
+.analytics-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 292px 1fr;
+  background: #f5f7fb;
+  color: #1f2a44;
+  font-family: 'Segoe UI', 'Manrope', Arial, sans-serif;
+  font-size: 16px;
+}
+
+.analytics-sidebar {
+  background: linear-gradient(180deg, #0d1a35 0%, #111f3c 100%);
+  color: #f0f5ff;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 30px 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.analytics-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 38px;
+}
+
+.analytics-brand h1 {
+  margin: 0;
+  font-size: clamp(1.3rem, 1.1vw + 0.95rem, 1.85rem);
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0.1px;
+}
+
+.analytics-brand p {
+  margin: 4px 0 0;
+  color: rgba(235, 241, 255, 0.8);
+  font-size: clamp(0.82rem, 0.3vw + 0.75rem, 1rem);
+  line-height: 1;
+  font-weight: 500;
+}
+
+.analytics-nav {
+  display: grid;
+  gap: 8px;
+  margin-bottom: auto;
+}
+
+.analytics-main {
+  background: #f6f8fc;
+}
+
+.analytics-header {
+  padding: 28px 34px 26px;
+  border-bottom: 1px solid #e4eaf3;
+}
+
+.analytics-header h2 {
+  margin: 0;
+  color: #162542;
+  font-size: clamp(1.45rem, 0.8vw + 1.2rem, 1.95rem);
+  line-height: 1.2;
+}
+
+.analytics-header p {
+  margin: 10px 0 0;
+  color: #556786;
+  font-size: clamp(0.92rem, 0.25vw + 0.86rem, 1rem);
+}
+
+.analytics-stats-grid {
+  padding: 36px 34px 0;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(4, minmax(210px, 1fr));
+}
+
+.analytics-stat-card {
+  border: 1px solid #d7e0ed;
+  background: #ffffff;
+  border-radius: 18px;
+  min-height: 190px;
+  padding: 26px 28px;
+}
+
+.analytics-stat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.analytics-icon-wrap {
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+}
+
+.analytics-icon-wrap svg {
+  width: 24px;
+  height: 24px;
+}
+
+.trend-icon {
+  width: 22px;
+  height: 22px;
+  color: #1dc464;
+}
+
+.analytics-stat-value {
+  margin: 26px 0 6px;
+  color: #202c45;
+  font-size: clamp(1.65rem, 0.8vw + 1.4rem, 2.1rem);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.analytics-stat-label {
+  margin: 0;
+  color: #596a86;
+  font-size: clamp(0.9rem, 0.2vw + 0.85rem, 1rem);
+  font-weight: 500;
+}
+
+.analytics-stat-card.events .analytics-icon-wrap {
+  background: linear-gradient(135deg, #8357ff 0%, #f23eb2 100%);
+}
+
+.analytics-stat-card.registrations .analytics-icon-wrap {
+  background: linear-gradient(135deg, #1c9aed 0%, #2c74ff 100%);
+}
+
+.analytics-stat-card.attendance .analytics-icon-wrap {
+  background: linear-gradient(135deg, #00c28a 0%, #0ea6b3 100%);
+}
+
+.analytics-stat-card.average .analytics-icon-wrap {
+  background: linear-gradient(135deg, #ff6f00 0%, #ff2f62 100%);
+}
+
+.analytics-panel {
+  margin: 34px 34px 0;
+  background: #ffffff;
+  border: 1px solid #d7e0ed;
+  border-radius: 18px;
+  padding: 28px;
+}
+
+.analytics-panel:last-child {
+  margin-bottom: 34px;
+}
+
+.analytics-panel h3 {
+  margin: 0 0 22px;
+  color: #24324a;
+  font-size: clamp(1.1rem, 0.45vw + 1rem, 1.35rem);
+}
+
+.category-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(4, minmax(170px, 1fr));
+}
+
+.category-card {
+  background: #f2f5fa;
+  border-radius: 16px;
+  min-height: 96px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.category-count {
+  margin: 0;
+  color: #27354d;
+  font-size: clamp(1.45rem, 0.55vw + 1.25rem, 1.85rem);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.category-name {
+  margin: 8px 0 0;
+  color: #5c6b83;
+  font-size: 0.94rem;
+  font-weight: 500;
+}
+
+.popular-list {
+  display: grid;
+  gap: 14px;
+}
+
+.popular-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #f2f5fa;
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.popular-rank {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #8357ff 0%, #f23eb2 100%);
+}
+
+.popular-text {
+  flex: 1;
+  min-width: 240px;
+}
+
+.popular-text p {
+  margin: 0;
+  color: #27354d;
+  font-size: clamp(1rem, 0.3vw + 0.93rem, 1.15rem);
+  font-weight: 700;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.popular-text span {
+  display: block;
+  margin-top: 4px;
+  color: #5e6f88;
+  font-size: clamp(0.84rem, 0.25vw + 0.79rem, 0.95rem);
+  font-weight: 500;
+}
+
+.popular-progress-track {
+  width: 140px;
+  height: 10px;
+  border-radius: 999px;
+  background: #d5dde9;
+  overflow: hidden;
+}
+
+.popular-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #7f43ff 0%, #f23eb2 100%);
+}
+
+.analytics-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.analytics-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+}
+
+.analytics-table th,
+.analytics-table td {
+  text-align: left;
+  padding: 16px 18px;
+  border-bottom: 1px solid #e1e8f3;
+  color: #364760;
+  font-size: clamp(0.9rem, 0.2vw + 0.85rem, 1rem);
+}
+
+.analytics-table th {
+  color: #30415b;
+  font-weight: 700;
+}
+
+.analytics-table td:first-child {
+  color: #27354d;
+  font-weight: 600;
+}
+
+.analytics-table td:last-child {
+  font-weight: 700;
+}
+
+.category-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #ecddff;
+  color: #7f2eef;
+  font-size: 0.95em;
+  padding: 5px 10px;
+}
+
+@media (max-width: 1380px) {
+  .analytics-stats-grid,
+  .category-grid {
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 1080px) {
+  .analytics-page {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-sidebar {
+    padding: 22px 18px;
+  }
+
+  .analytics-main {
+    min-height: auto;
+  }
+
+  .analytics-stats-grid {
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .analytics-header,
+  .analytics-stats-grid,
+  .analytics-panel {
+    margin-left: 16px;
+    margin-right: 16px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .analytics-stats-grid {
+    margin-right: 0;
+    margin-left: 0;
+    padding: 18px 16px 0;
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-panel {
+    margin-top: 18px;
+  }
+
+  .category-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .popular-item {
+    flex-wrap: wrap;
+  }
+
+  .popular-progress-track {
+    width: 100%;
+  }
+}
