@@ -184,6 +184,50 @@ function Analytics() {
       .slice(0, 5)
   }, [eventRows])
 
+  const monthLabel = useMemo(() => {
+    return new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  }, [])
+
+  const categoryLeader = useMemo(() => {
+    const ranked = [...categoryStats].sort((a, b) => b.count - a.count)
+    return ranked[0] || { name: 'General', count: 0 }
+  }, [categoryStats])
+
+  const bestFilledEvent = useMemo(() => {
+    if (eventRows.length === 0) {
+      return null
+    }
+
+    return [...eventRows].sort((a, b) => b.fillRate - a.fillRate)[0]
+  }, [eventRows])
+
+  const lowFillEventsCount = useMemo(() => {
+    return eventRows.filter((event) => event.fillRate < 30).length
+  }, [eventRows])
+
+  const insights = [
+    {
+      key: 'top-category',
+      title: 'Top Category',
+      value: categoryLeader.name,
+      detail: `${categoryLeader.count} active events`,
+    },
+    {
+      key: 'best-performing',
+      title: 'Best Performing Event',
+      value: bestFilledEvent?.title || 'No events yet',
+      detail: bestFilledEvent
+        ? `${bestFilledEvent.fillRate}% seats filled`
+        : 'Create your first event to track performance',
+    },
+    {
+      key: 'needs-attention',
+      title: 'Needs Attention',
+      value: `${lowFillEventsCount} events`,
+      detail: 'Events with less than 30% registration fill rate',
+    },
+  ]
+
   const stats = [
     {
       key: 'total-events',
@@ -274,10 +318,27 @@ function Analytics() {
 
       <main className="analytics-main">
         <header className="analytics-header">
-          <h2>
-            Analytics <span aria-hidden="true">📊</span>
-          </h2>
+          <div className="analytics-header-top">
+            <h2>
+              Analytics <span aria-hidden="true">📊</span>
+            </h2>
+            <span className="analytics-period-pill">{monthLabel}</span>
+          </div>
           <p>Track your performance and gain insights into your webinars</p>
+          <div className="analytics-quick-summary" aria-label="Summary highlights">
+            <article>
+              <strong>{totalEvents}</strong>
+              <span>Published Events</span>
+            </article>
+            <article>
+              <strong>{totalRegistrations}</strong>
+              <span>Community Signups</span>
+            </article>
+            <article>
+              <strong>{attendanceRate}%</strong>
+              <span>Attendance Efficiency</span>
+            </article>
+          </div>
         </header>
 
         <section className="analytics-stats-grid" aria-label="Analytics metrics">
@@ -305,6 +366,19 @@ function Analytics() {
               <article key={item.name} className="category-card">
                 <p className="category-count">{item.count}</p>
                 <p className="category-name">{item.name}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="analytics-panel" aria-label="Performance insights">
+          <h3>Performance Insights</h3>
+          <div className="insights-grid">
+            {insights.map((insight) => (
+              <article key={insight.key} className="insight-card">
+                <p className="insight-title">{insight.title}</p>
+                <p className="insight-value">{insight.value}</p>
+                <p className="insight-detail">{insight.detail}</p>
               </article>
             ))}
           </div>
