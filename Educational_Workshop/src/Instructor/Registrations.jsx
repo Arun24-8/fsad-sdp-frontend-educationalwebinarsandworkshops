@@ -11,7 +11,7 @@ const sidebarItems = [
   { label: 'Manage Events', path: '/instructor/manage-events', icon: CalendarIcon },
   { label: 'Registrations', path: '/instructor/registrations', icon: UsersIcon },
   { label: 'Resources', path: '/instructor/resources', icon: UploadIcon },
-  { label: 'Analytics', icon: ChartIcon },
+  { label: 'Analytics', path: '/instructor/analytics', icon: ChartIcon },
 ]
 
 function Registrations() {
