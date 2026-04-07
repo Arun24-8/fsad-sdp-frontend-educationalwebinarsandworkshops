@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Browseevents from "./Browseevents";
 import Mywebinar from "./Mywebinar";
+import UserProfile from "./UserProfile";
 import "./UserDashboard.css";
 
 const SCHEDULED_EVENTS_KEY = "scheduledEvents";
@@ -242,9 +243,11 @@ function getStudentRegistrations(items, profileName, profileEmail) {
 
 export default function UserDashboard({
   profileName,
+  profileUsername,
   profileEmail,
+  profileContact,
   onLogout,
-  onUpdateEmail,
+  onUpdateProfile,
 }) {
   const [activeNav, setActiveNav] = useState("Dashboard");
   const [activeFilter, setActiveFilter] = useState("All");
@@ -253,11 +256,6 @@ export default function UserDashboard({
   const [events, setEvents] = useState(DEFAULT_WEBINARS);
   const [resources, setResources] = useState(DEFAULT_RESOURCES);
   const [showSettings, setShowSettings] = useState(false);
-  const [editEmail, setEditEmail] = useState(profileEmail || "");
-
-  useEffect(() => {
-    setEditEmail(profileEmail || "");
-  }, [profileEmail]);
 
   useEffect(() => {
     const savedRegistrations = safeParseJson(
@@ -452,54 +450,14 @@ export default function UserDashboard({
 
         <main className="main-content">
           {showSettings ? (
-            <section className="section">
-              <div className="section-header">
-                <h3>User Settings</h3>
-              </div>
-              <div className="resource-grid">
-                <div className="resource-card">
-                  <p className="muted">Name</p>
-                  <h4>{profileName || "Student"}</h4>
-                </div>
-                <div className="resource-card">
-                  <p className="muted">Email</p>
-                  <h4>{profileEmail || "Not set"}</h4>
-                </div>
-              </div>
-              <form
-                className="auth-form"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  if (onUpdateEmail) {
-                    onUpdateEmail(editEmail);
-                  }
-                }}
-              >
-                <label className="field">
-                  <span>Update Email</span>
-                  <input
-                    type="email"
-                    placeholder="your.email@example.com"
-                    value={editEmail}
-                    onChange={(event) => setEditEmail(event.target.value)}
-                    required
-                  />
-                </label>
-                <div className="portal-section">
-                  <button className="primary" type="submit">
-                    Save Email
-                    <span className="arrow">→</span>
-                  </button>
-                  <button
-                    className="change-btn"
-                    type="button"
-                    onClick={() => setShowSettings(false)}
-                  >
-                    Back
-                  </button>
-                </div>
-              </form>
-            </section>
+            <UserProfile
+              profileName={profileName}
+              profileUsername={profileUsername}
+              profileEmail={profileEmail}
+              profileContact={profileContact}
+              onUpdateProfile={onUpdateProfile}
+              onBack={() => setShowSettings(false)}
+            />
           ) : activeNav === "My Webinars" ? (
             <Mywebinar registrations={registrations} />
           ) : activeNav === "Browse Events" ? (

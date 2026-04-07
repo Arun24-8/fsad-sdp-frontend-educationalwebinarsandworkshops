@@ -15,24 +15,32 @@ const LOGGED_IN_USER_KEY = 'eduwebinarLoggedInUser'
 function UserDashboardPage() {
   const navigate = useNavigate()
   const [profileName, setProfileName] = useState('User')
+  const [profileUsername, setProfileUsername] = useState('')
   const [profileEmail, setProfileEmail] = useState('')
+  const [profileContact, setProfileContact] = useState('')
 
   useEffect(() => {
     const savedUser = localStorage.getItem(LOGGED_IN_USER_KEY)
 
     if (!savedUser) {
       setProfileName('User')
+      setProfileUsername('')
       setProfileEmail('')
+      setProfileContact('')
       return
     }
 
     try {
       const parsedUser = JSON.parse(savedUser)
-      setProfileName(parsedUser?.username || 'User')
+      setProfileName(parsedUser?.name || parsedUser?.username || 'User')
+      setProfileUsername(parsedUser?.username || '')
       setProfileEmail(parsedUser?.email || '')
+      setProfileContact(parsedUser?.contact || '')
     } catch {
       setProfileName('User')
+      setProfileUsername('')
       setProfileEmail('')
+      setProfileContact('')
     }
   }, [])
 
@@ -41,13 +49,18 @@ function UserDashboardPage() {
     navigate('/dashboard')
   }
 
-  const handleUpdateEmail = (newEmail) => {
-    setProfileEmail(newEmail)
+  const handleUpdateProfile = ({ name, contact }) => {
+    const updatedName = name?.trim() || profileName || 'User'
+    const updatedContact = contact?.trim() || ''
+    setProfileName(updatedName)
+    setProfileContact(updatedContact)
     localStorage.setItem(
       LOGGED_IN_USER_KEY,
       JSON.stringify({
-        username: profileName || 'User',
-        email: newEmail,
+        username: profileUsername || '',
+        name: updatedName,
+        email: profileEmail || '',
+        contact: updatedContact,
       }),
     )
   }
@@ -55,9 +68,11 @@ function UserDashboardPage() {
   return (
     <UserDashboard
       profileName={profileName}
+      profileUsername={profileUsername}
       profileEmail={profileEmail}
+      profileContact={profileContact}
       onLogout={handleLogout}
-      onUpdateEmail={handleUpdateEmail}
+      onUpdateProfile={handleUpdateProfile}
     />
   )
 }
