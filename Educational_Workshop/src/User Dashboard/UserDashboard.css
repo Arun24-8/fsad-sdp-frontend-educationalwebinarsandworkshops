@@ -174,6 +174,32 @@
   gap: 12px;
 }
 
+.portal-section.delete-section {
+  justify-content: flex-start;
+}
+
+.danger-button {
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  background: #fff1f2;
+  color: #b91c1c;
+  font-weight: 600;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.danger-button:hover {
+  transform: translateY(-1px);
+  background: #fee2e2;
+  box-shadow: 0 10px 18px rgba(239, 68, 68, 0.18);
+}
+
+.danger-button:disabled {
+  cursor: default;
+  opacity: 0.7;
+  box-shadow: none;
+}
+
 .profile-action {
   display: flex;
   justify-content: space-between;

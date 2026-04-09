@@ -456,6 +456,7 @@ export default function UserDashboard({
               profileEmail={profileEmail}
               profileContact={profileContact}
               onUpdateProfile={onUpdateProfile}
+              onDeleteAccount={onLogout}
               onBack={() => setShowSettings(false)}
             />
           ) : activeNav === "My Webinars" ? (

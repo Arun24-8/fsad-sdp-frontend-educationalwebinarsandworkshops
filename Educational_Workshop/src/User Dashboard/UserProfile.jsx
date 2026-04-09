@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 const UPDATE_PROFILE_URL = `${import.meta.env.VITE_API_URL || ""}/studentapi/updateprofile`;
+const DELETE_PROFILE_URL = `${import.meta.env.VITE_API_URL || ""}/studentapi/deletestudent`;
 
 export default function UserProfile({
   profileName,
@@ -9,12 +10,14 @@ export default function UserProfile({
   profileEmail,
   profileContact,
   onUpdateProfile,
+  onDeleteAccount,
   onBack,
 }) {
   const [editName, setEditName] = useState(profileName || "");
   const [editContact, setEditContact] = useState(profileContact || "");
   const [warning, setWarning] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
@@ -24,6 +27,57 @@ export default function UserProfile({
   useEffect(() => {
     setEditContact(profileContact || "");
   }, [profileContact]);
+
+  const handleDeleteAccount = async () => {
+    if (isDeleting) {
+      return;
+    }
+
+    setWarning("");
+    setSuccessMessage("");
+
+    if (!profileUsername) {
+      setWarning("Unable to delete account. Username is missing.");
+      return;
+    }
+
+    const shouldDelete = window.confirm(
+      "Are you sure you want to delete your account? This action cannot be undone."
+    );
+
+    if (!shouldDelete) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const response = await axios.delete(
+        `${DELETE_PROFILE_URL}/${profileUsername}`
+      );
+      setSuccessMessage(
+        response?.data || "Student Account Deleted Successfully"
+      );
+      if (onDeleteAccount) {
+        onDeleteAccount();
+      }
+    } catch (error) {
+      if (error.response?.status === 404) {
+        setWarning("Student Account Not Found");
+      } else if (error.response?.data) {
+        setWarning(
+          typeof error.response.data === "string"
+            ? error.response.data
+            : "Unable to delete account. Please try again."
+        );
+      } else if (error.request) {
+        setWarning("Network error. Please try again.");
+      } else {
+        setWarning("Unable to delete account. Please try again.");
+      }
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <section className="section">
@@ -113,6 +167,16 @@ export default function UserProfile({
           </button>
           <button className="change-btn" type="button" onClick={onBack}>
             Back
+          </button>
+        </div>
+        <div className="portal-section delete-section">
+          <button
+            className="danger-button"
+            type="button"
+            onClick={handleDeleteAccount}
+            disabled={isDeleting}
+          >
+            {isDeleting ? "Deleting..." : "Delete Account"}
           </button>
         </div>
       </form>
